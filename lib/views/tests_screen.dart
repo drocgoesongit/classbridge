@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TestsScreen extends StatefulWidget {
-  const TestsScreen({super.key, required this.subjectName});
+  bool parents;
+  TestsScreen({super.key, required this.subjectName, required this.parents});
   final String subjectName;
 
   @override
@@ -31,91 +32,95 @@ class _TestsScreenState extends State<TestsScreen> {
               ),
             ],
           )),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              TextEditingController testController = TextEditingController();
-              return AlertDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0),
-                ),
-                title: const Text('Add Test'),
-                titleTextStyle: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontFamily: 'Gilroy',
-                  fontWeight: FontWeight.w600,
-                ),
-                content: TextField(
-                  controller: testController,
-                  decoration:
-                      const InputDecoration(hintText: 'Enter test name'),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    child: const Text('Cancel'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  TextButton(
-                    child: const Text('Send'),
-                    onPressed: () async {
-                      String testText = testController.text;
-                      // Query the 'subjects' collection to find the document
-                      QuerySnapshot subjectQuery = await FirebaseFirestore
-                          .instance
-                          .collection('subjects')
-                          .where('subjectName', isEqualTo: widget.subjectName)
-                          .get();
+      floatingActionButton: widget.parents
+          ? SizedBox.shrink()
+          : FloatingActionButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    TextEditingController testController =
+                        TextEditingController();
+                    return AlertDialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      title: const Text('Add Test'),
+                      titleTextStyle: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontFamily: 'Gilroy',
+                        fontWeight: FontWeight.w600,
+                      ),
+                      content: TextField(
+                        controller: testController,
+                        decoration:
+                            const InputDecoration(hintText: 'Enter test name'),
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('Cancel'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        TextButton(
+                          child: const Text('Send'),
+                          onPressed: () async {
+                            String testText = testController.text;
+                            // Query the 'subjects' collection to find the document
+                            QuerySnapshot subjectQuery = await FirebaseFirestore
+                                .instance
+                                .collection('subjects')
+                                .where('subjectName',
+                                    isEqualTo: widget.subjectName)
+                                .get();
 
-                      if (subjectQuery.docs.isNotEmpty) {
-                        // Get the document ID of the found document
-                        String subjectDocId = subjectQuery.docs.first.id;
+                            if (subjectQuery.docs.isNotEmpty) {
+                              // Get the document ID of the found document
+                              String subjectDocId = subjectQuery.docs.first.id;
 
-                        // Add the test to the found subject document
-                        FirebaseFirestore.instance
-                            .collection('subjects')
-                            .doc(subjectDocId)
-                            .collection("tests")
-                            .doc(testText)
-                            .set({
-                          "total": 100,
-                        }).then((value) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content:
-                                  Text('Test $testText added successfully!'),
-                            ),
-                          );
-                          Provider.of<FetchData>(context, listen: false)
-                              .getTestDataForSubject(widget.subjectName);
-                          Navigator.of(context).pop();
-                        }).catchError((error) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Failed to add test: $error'),
-                            ),
-                          );
-                        });
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Subject not found!'),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        },
-        child: const Icon(Icons.add),
-      ),
+                              // Add the test to the found subject document
+                              FirebaseFirestore.instance
+                                  .collection('subjects')
+                                  .doc(subjectDocId)
+                                  .collection("tests")
+                                  .doc(testText)
+                                  .set({
+                                "total": 100,
+                              }).then((value) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                        'Test $testText added successfully!'),
+                                  ),
+                                );
+                                Provider.of<FetchData>(context, listen: false)
+                                    .getTestDataForSubject(widget.subjectName);
+                                Navigator.of(context).pop();
+                              }).catchError((error) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Failed to add test: $error'),
+                                  ),
+                                );
+                              });
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Subject not found!'),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: const Icon(Icons.add),
+            ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6.0),
@@ -141,6 +146,7 @@ class _TestsScreenState extends State<TestsScreen> {
                                 builder: (context) => TestsDetailScreen(
                                   subjectName: widget.subjectName,
                                   testName: data.tests[index].name,
+                                  parents: widget.parents,
                                 ),
                               ),
                             );

@@ -122,9 +122,9 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => TestsScreen(
-                                              subjectName: data
-                                                  .subjects[index].subjectName,
-                                            )));
+                                            subjectName: data
+                                                .subjects[index].subjectName,
+                                            parents: false)));
                               },
                               leading: Icon(Icons.book_rounded),
                               title: Text(data.subjects[index].subjectName,

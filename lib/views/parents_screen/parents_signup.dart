@@ -5,20 +5,22 @@ import 'package:classbridge/constants/text_const.dart';
 import 'package:classbridge/viewmodels/signin_viewmodel.dart';
 import 'package:classbridge/views/signin_screen.dart';
 
-class SignupPage extends StatefulWidget {
+class ParentsSignup extends StatefulWidget {
   @override
-  _SignupPageState createState() => _SignupPageState();
+  _ParentsSignupState createState() => _ParentsSignupState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _ParentsSignupState extends State<ParentsSignup> {
   bool _obscurePassword = true;
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _secondNameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  TextEditingController _studentIdController = TextEditingController();
   bool _nameError = false;
   bool _emailError = false;
   bool _termsAndConditions = false;
+  bool _studentIdError = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +35,12 @@ class _SignupPageState extends State<SignupPage> {
                 Image.asset("assets/images/signup.png", width: 90, height: 90),
                 SizedBox(height: MediaQuery.of(context).size.height / 60),
                 Text(
-                  "Register as Teachers",
+                  "Register as Parents",
                   style: kMainTitleBoldTextStyle,
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height / 80),
                 Text(
-                  "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit",
+                  "Register your account to get started",
                   style: kSmallParaTextStyle,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -147,6 +149,33 @@ class _SignupPageState extends State<SignupPage> {
                         )),
                   ),
                   child: TextFormField(
+                    controller: _studentIdController,
+                    keyboardType: TextInputType.number,
+                    style: kSmallParaTextStyle,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.blue.shade50,
+                      labelStyle: kSmallParaTextStyle,
+                      labelText: 'Student Id',
+                      border: InputBorder.none, // Remove the border
+                      errorText: _studentIdError ? 'Student Id be empty' : null,
+                      errorStyle: kSmallParaTextStyle.copyWith(
+                          color: Colors.red, fontSize: 12),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 12),
+                ClipPath(
+                  clipper: ShapeBorderClipper(
+                    shape: ContinuousRectangleBorder(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(30)),
+                        side: BorderSide(
+                          color: softGrayStrokeCustomColor,
+                          width: 2,
+                        )),
+                  ),
+                  child: TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     style: kSmallParaTextStyle,
@@ -216,7 +245,7 @@ class _SignupPageState extends State<SignupPage> {
                                   _passwordController.value.text,
                                   _firstNameController.value.text,
                                   _secondNameController.value.text,
-                                  "",
+                                  _studentIdController.value.text,
                                   context);
 
                           if (success != null && success) {

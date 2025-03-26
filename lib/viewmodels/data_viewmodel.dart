@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FetchData with ChangeNotifier {
   bool _isLoading = false;
@@ -16,6 +17,12 @@ class FetchData with ChangeNotifier {
   bool get isUserDataLoading => _isUserDataLoading;
   bool _isTestDataLoading = false;
   bool get isTestDataLoading => _isTestDataLoading;
+  String _studentName = "";
+  String get studentName => _studentName;
+  String _studentClass = "";
+  String get studentClass => _studentClass;
+  String _studentId = "";
+  String get studentId => _studentId;
 
   List<StudentModel> _students = [];
   List<StudentModel> get students => _students;
@@ -23,6 +30,7 @@ class FetchData with ChangeNotifier {
   List<SubjectModel> get subjects => _subjects;
   List<ReminderModel> _reminders = [];
   List<ReminderModel> get reminders => _reminders;
+
   UserModel? _user;
   UserModel? get user => _user;
   List<TestsModel> _tests = [];
@@ -107,6 +115,31 @@ class FetchData with ChangeNotifier {
     _isUserDataLoading = true;
     notifyListeners();
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? type = prefs.getString("type");
+      if (type == "parents") {
+        String uid = FirebaseAuth.instance.currentUser!.uid;
+        DocumentSnapshot userDoc =
+            await FirebaseFirestore.instance.collection("users").doc(uid).get();
+        if (userDoc.exists) {
+          _user = UserModel.fromJson(userDoc.data()! as Map<String, dynamic>);
+          QuerySnapshot studentDocs = await FirebaseFirestore.instance
+              .collection("students")
+              .where("id", isEqualTo: _user!.studentId)
+              .limit(1)
+              .get();
+
+          if (studentDocs.docs.isNotEmpty) {
+            DocumentSnapshot studentDoc = studentDocs.docs.first;
+            _studentName = studentDoc["name"];
+            _studentClass = studentDoc["class"];
+            _studentId = studentDoc["id"];
+          } else {
+            log("Student document does not exist", name: "FetchData");
+          }
+        }
+      }
+
       String uid = FirebaseAuth.instance.currentUser!.uid;
       DocumentSnapshot userDoc =
           await FirebaseFirestore.instance.collection("users").doc(uid).get();

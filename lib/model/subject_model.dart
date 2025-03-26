@@ -1,8 +1,12 @@
 class SubjectModel {
   final String subjectName;
   int numberOfTests;
+  List<int> scores = [];
 
-  SubjectModel({required this.subjectName, this.numberOfTests = 0});
+  SubjectModel(
+      {required this.subjectName,
+      this.numberOfTests = 0,
+      this.scores = const []});
 
   factory SubjectModel.fromJson(Map<String, dynamic> json) {
     return SubjectModel(

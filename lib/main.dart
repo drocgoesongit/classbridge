@@ -8,7 +8,6 @@ import 'package:classbridge/views/signup_screen.dart';
 import 'package:classbridge/views/splash_screen.dart';
 import 'package:provider/provider.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -27,13 +26,15 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => FetchData()),
       ],
       child: MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: 'Gilroy',
-        colorScheme: ColorScheme.fromSeed(seedColor: primaryBlueCustomColor),
-        useMaterial3: true,
-      ),
-      home: SplashScreen(),
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          fontFamily: 'Gilroy',
+          colorScheme: ColorScheme.fromSeed(seedColor: primaryBlueCustomColor),
+          useMaterial3: true,
+        ),
+        home: SplashScreen(
+          bifurcation: false,
+        ),
       ),
     );
   }

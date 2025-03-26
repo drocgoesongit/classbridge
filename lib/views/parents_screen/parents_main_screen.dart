@@ -2,6 +2,7 @@ import 'package:classbridge/constants/color_const.dart';
 import 'package:classbridge/constants/helper_class.dart';
 import 'package:classbridge/views/chatbot_screen.dart';
 import 'package:classbridge/views/home_screen.dart';
+import 'package:classbridge/views/parents_screen/parents_home_screen.dart';
 import 'package:classbridge/views/profile_screen.dart';
 import 'package:classbridge/views/reminder_screen.dart';
 import 'package:classbridge/views/students_screen.dart';
@@ -12,13 +13,13 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+class ParentsMainScreen extends StatefulWidget {
+  const ParentsMainScreen({super.key});
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  State<ParentsMainScreen> createState() => _ParentsMainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _ParentsMainScreenState extends State<ParentsMainScreen> {
   GlobalKey<ScaffoldState> homeScaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -35,10 +36,8 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _widgetOptions = [
-    HomeScreen(),
-    StudentsScreen(),
+    ParentsHomeScreen(),
     ChatScreen(chatId: HelperClass.generateRandomString()),
-    ReminderScreen(),
     ProfileScreen(),
   ];
 
@@ -76,17 +75,8 @@ class _MainScreenState extends State<MainScreen> {
                         label: 'Home',
                       ),
                       BottomNavigationBarItem(
-                        icon: Icon(Icons.group_outlined,
-                            color: _selectedIndex == 1
-                                ? primaryBlueCustomColor
-                                : Colors.black),
-                        activeIcon: Icon(Icons.group_rounded,
-                            color: primaryBlueCustomColor),
-                        label: 'Students',
-                      ),
-                      BottomNavigationBarItem(
                         icon: Icon(Icons.message_rounded,
-                            color: _selectedIndex == 2
+                            color: _selectedIndex == 1
                                 ? primaryBlueCustomColor
                                 : Colors.black),
                         activeIcon: Icon(Icons.message_rounded,
@@ -94,17 +84,8 @@ class _MainScreenState extends State<MainScreen> {
                         label: 'Chat',
                       ),
                       BottomNavigationBarItem(
-                        icon: Icon(Icons.campaign_outlined,
-                            color: _selectedIndex == 3
-                                ? primaryBlueCustomColor
-                                : Colors.black),
-                        activeIcon: Icon(Icons.campaign_rounded,
-                            color: primaryBlueCustomColor),
-                        label: 'Notices',
-                      ),
-                      BottomNavigationBarItem(
                         icon: Icon(Icons.person_outline,
-                            color: _selectedIndex == 4
+                            color: _selectedIndex == 2
                                 ? primaryBlueCustomColor
                                 : Colors.black),
                         activeIcon: Icon(Icons.person_rounded,
