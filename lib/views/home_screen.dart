@@ -5,7 +5,7 @@ import 'package:classbridge/constants/helper_class.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+      
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 

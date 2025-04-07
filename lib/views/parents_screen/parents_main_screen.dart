@@ -1,11 +1,13 @@
 import 'package:classbridge/constants/color_const.dart';
 import 'package:classbridge/constants/helper_class.dart';
+import 'package:classbridge/views/chat_list_screen.dart';
 import 'package:classbridge/views/chatbot_screen.dart';
 import 'package:classbridge/views/home_screen.dart';
 import 'package:classbridge/views/parents_screen/parents_home_screen.dart';
 import 'package:classbridge/views/profile_screen.dart';
 import 'package:classbridge/views/reminder_screen.dart';
 import 'package:classbridge/views/students_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,6 +40,7 @@ class _ParentsMainScreenState extends State<ParentsMainScreen> {
   final List<Widget> _widgetOptions = [
     ParentsHomeScreen(),
     ChatScreen(chatId: HelperClass.generateRandomString()),
+    ChatListScreen(userId: FirebaseAuth.instance.currentUser!.uid, isTeacher: false),
     ProfileScreen(),
   ];
 
@@ -82,10 +85,18 @@ class _ParentsMainScreenState extends State<ParentsMainScreen> {
                         activeIcon: Icon(Icons.message_rounded,
                             color: primaryBlueCustomColor),
                         label: 'Chat',
+                      ),BottomNavigationBarItem(
+                        icon: Icon(Icons.forum_rounded,
+                            color: _selectedIndex == 2
+                                ? primaryBlueCustomColor
+                                : Colors.black),
+                        activeIcon: Icon(Icons.forum_rounded,
+                            color: primaryBlueCustomColor),
+                        label: 'Feedbacks',
                       ),
                       BottomNavigationBarItem(
                         icon: Icon(Icons.person_outline,
-                            color: _selectedIndex == 2
+                            color: _selectedIndex == 3
                                 ? primaryBlueCustomColor
                                 : Colors.black),
                         activeIcon: Icon(Icons.person_rounded,

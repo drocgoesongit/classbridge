@@ -3,9 +3,9 @@ class UserModel {
   String firstName;
   String lastName;
   String email;
-
   int loginTimestamp;
   String studentId;
+  String type;
 
   UserModel({
     required this.id,
@@ -14,6 +14,7 @@ class UserModel {
     required this.email,
     required this.loginTimestamp,
     this.studentId = "",
+    this.type = "teacher",
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -25,6 +26,7 @@ class UserModel {
       loginTimestamp: json['loginTimestamp'],
       studentId:
           json['studentId'] ?? "", // Default to empty string if not present
+      type: json['type'] ?? "teacher",
     );
   }
 
@@ -36,6 +38,7 @@ class UserModel {
       'email': email,
       'loginTimestamp': loginTimestamp,
       'studentId': studentId,
+      'type': type,
     };
   }
 }

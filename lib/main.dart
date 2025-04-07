@@ -3,8 +3,6 @@ import 'package:classbridge/viewmodels/data_viewmodel.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:classbridge/constants/color_const.dart';
-import 'package:classbridge/views/signin_screen.dart';
-import 'package:classbridge/views/signup_screen.dart';
 import 'package:classbridge/views/splash_screen.dart';
 import 'package:provider/provider.dart';
 

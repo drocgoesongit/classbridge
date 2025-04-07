@@ -1,10 +1,13 @@
 import 'package:classbridge/constants/color_const.dart';
 import 'package:classbridge/constants/helper_class.dart';
+import 'package:classbridge/views/chat_list_screen.dart';
 import 'package:classbridge/views/chatbot_screen.dart';
 import 'package:classbridge/views/home_screen.dart';
+import 'package:classbridge/views/parents_teacher_chat_screen.dart';
 import 'package:classbridge/views/profile_screen.dart';
 import 'package:classbridge/views/reminder_screen.dart';
 import 'package:classbridge/views/students_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -37,7 +40,8 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _widgetOptions = [
     HomeScreen(),
     StudentsScreen(),
-    ChatScreen(chatId: HelperClass.generateRandomString()),
+    ChatListScreen(userId: FirebaseAuth.instance.currentUser!.uid, isTeacher: true),
+    ChatScreen(chatId: HelperClass.generateRandomString()), 
     ReminderScreen(),
     ProfileScreen(),
   ];
@@ -85,17 +89,26 @@ class _MainScreenState extends State<MainScreen> {
                         label: 'Students',
                       ),
                       BottomNavigationBarItem(
-                        icon: Icon(Icons.message_rounded,
+                        icon: Icon(Icons.forum_rounded,
                             color: _selectedIndex == 2
+                                ? primaryBlueCustomColor
+                                : Colors.black),
+                        activeIcon: Icon(Icons.forum_rounded,
+                            color: primaryBlueCustomColor),
+                        label: 'Feedbacks',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.message_rounded,
+                            color: _selectedIndex == 3
                                 ? primaryBlueCustomColor
                                 : Colors.black),
                         activeIcon: Icon(Icons.message_rounded,
                             color: primaryBlueCustomColor),
-                        label: 'Chat',
+                        label: 'Chats',
                       ),
                       BottomNavigationBarItem(
                         icon: Icon(Icons.campaign_outlined,
-                            color: _selectedIndex == 3
+                            color: _selectedIndex == 4
                                 ? primaryBlueCustomColor
                                 : Colors.black),
                         activeIcon: Icon(Icons.campaign_rounded,
@@ -104,7 +117,7 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                       BottomNavigationBarItem(
                         icon: Icon(Icons.person_outline,
-                            color: _selectedIndex == 4
+                            color: _selectedIndex == 5
                                 ? primaryBlueCustomColor
                                 : Colors.black),
                         activeIcon: Icon(Icons.person_rounded,

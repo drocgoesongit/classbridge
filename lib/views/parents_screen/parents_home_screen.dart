@@ -1,3 +1,4 @@
+import 'package:classbridge/components/performance_carousel.dart';
 import 'package:classbridge/constants/helper_class.dart';
 import 'package:classbridge/viewmodels/data_viewmodel.dart';
 import 'package:classbridge/views/subjects_screen.dart';
@@ -88,6 +89,10 @@ class _ParentsHomeScreenState extends State<ParentsHomeScreen> {
                         });
                   }),
                   const SizedBox(height: 20),
+                                    _buildPerformanceSection(),
+
+
+    const SizedBox(height: 20),
                   const Text(
                     'Subjects',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -130,7 +135,8 @@ class _ParentsHomeScreenState extends State<ParentsHomeScreen> {
                               subtitle: Text(
                                   "Tests : ${data.subjects[index].numberOfTests}"),
                             );
-                          })
+                          }),
+
                 ],
               ),
             ),
@@ -197,4 +203,55 @@ class ActionCard extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _buildPerformanceSection() {
+  return Consumer<FetchData>(
+    builder: (context, dataProvider, child) {
+      if (dataProvider.isTestDataLoading) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+
+      if (dataProvider.tests.isEmpty) {
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text('No test data available for this student'),
+          ),
+        );
+      }
+
+      final performances = dataProvider.processTestData(dataProvider.tests);
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(0.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Academic Performance',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Student: ${dataProvider.studentName}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Text(
+                  'Class: ${dataProvider.studentClass}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ],
+            ),
+          ),
+          PerformanceCarousel(performances: performances),
+        ],
+      );
+    },
+  );
 }

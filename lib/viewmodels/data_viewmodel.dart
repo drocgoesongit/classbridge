@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:classbridge/model/reminder_model.dart';
 import 'package:classbridge/model/student_model.dart';
+import 'package:classbridge/model/student_performance.dart';
 import 'package:classbridge/model/subject_model.dart';
 import 'package:classbridge/model/tests_model.dart';
 import 'package:classbridge/model/user_model.dart';
@@ -134,6 +135,9 @@ class FetchData with ChangeNotifier {
             _studentName = studentDoc["name"];
             _studentClass = studentDoc["class"];
             _studentId = studentDoc["id"];
+            
+            // Fetch test data after getting student information
+            await getAllTestData();
           } else {
             log("Student document does not exist", name: "FetchData");
           }
@@ -148,11 +152,59 @@ class FetchData with ChangeNotifier {
       }
       notifyListeners();
     } catch (e) {
-      log("Error in getFunction: e", name: "FetchData");
+      log("Error in getUserData: $e", name: "FetchData");
     }
     _isUserDataLoading = false;
     notifyListeners();
   }
+
+  Future<void> getAllTestData() async {
+  _isTestDataLoading = true;
+  notifyListeners();
+  try {
+    _tests.clear(); // Clear the previous tests data
+    
+    // Only proceed if we have a student ID (for parent view)
+    if (_studentId.isEmpty) {
+      return;
+    }
+
+    // Get all subjects
+    QuerySnapshot subjectsQuery = await FirebaseFirestore.instance
+        .collection('subjects')
+        .get();
+
+    // For each subject, get its tests
+    for (var subjectDoc in subjectsQuery.docs) {
+      QuerySnapshot testQuery = await subjectDoc.reference
+          .collection("tests")
+          .get();
+
+      for (var testDoc in testQuery.docs) {
+        // Only include tests that have data for the current student
+        Map<String, dynamic> testData = testDoc.data() as Map<String, dynamic>;
+        if (testData.containsKey(_studentName)) {
+          TestsModel test = TestsModel(
+            name: testDoc.id,
+            data: {
+              subjectDoc['subjectName']: testData[_studentName],
+            },
+          );
+          _tests.add(test);
+        }
+      }
+    }
+    
+    // Sort tests by name (assuming test names are like "Test 1", "Test 2", etc.)
+    _tests.sort((a, b) => a.name.compareTo(b.name));
+    
+    notifyListeners();
+  } catch (e) {
+    log("Error in getAllTestData: $e", name: "FetchData");
+  }
+  _isTestDataLoading = false;
+  notifyListeners();
+}
 
   Future<void> getTestDataForSubject(String subjectName) async {
     _isTestDataLoading = true;
@@ -187,5 +239,40 @@ class FetchData with ChangeNotifier {
     }
     _isTestDataLoading = false;
     notifyListeners();
+  }
+
+  List<SubjectPerformance> processTestData(List<TestsModel> tests) {
+    // Group tests by subject
+    Map<String, List<TestScore>> subjectTests = {};
+
+    for (var test in tests) {
+      test.data.forEach((subject, score) {
+        if (!subjectTests.containsKey(subject)) {
+          subjectTests[subject] = [];
+        }
+        
+        subjectTests[subject]!.add(
+          TestScore(
+            testName: test.name,
+            score: double.parse(score.toString()),
+            date: DateTime.now(), // You might want to add date to your TestsModel
+          ),
+        );
+      });
+    }
+
+    // Convert to SubjectPerformance objects
+    return subjectTests.entries.map((entry) {
+      double average = entry.value.isEmpty
+          ? 0
+          : entry.value.map((s) => s.score).reduce((a, b) => a + b) /
+              entry.value.length;
+
+      return SubjectPerformance(
+        subjectName: entry.key,
+        scores: entry.value,
+        averageScore: average,
+      );
+    }).toList();
   }
 }
